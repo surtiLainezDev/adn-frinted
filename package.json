@@ -31,6 +31,7 @@
     "material-icons": "^0.3.1",
     "nuxt": "^2.0.0",
     "qs": "^6.9.1",
+    "update-electron-app": "^1.5.0",
     "v-mask": "^2.2.1",
     "vue": "^2.6.11",
     "vue-datetime": "^1.0.0-beta.13",
@@ -44,7 +45,6 @@
     "cross-env": "^5.1.4",
     "electron": "2.0.0-beta.7",
     "electron-builder": "^20.8.1",
-    "update-electron-app": "^1.5.0",
     "electron-devtools-installer": "^2.2.3",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2"

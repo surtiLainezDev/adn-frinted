@@ -1,5 +1,5 @@
 <template>
-    <vs-card class="border border-primary" style="background-color: orangered">
+    <vs-card class="border border-primary">
         <vs-tabs>
             <div v-if="tipoUser == 1">
                 <vs-tab label="Administrador" icon="person" class="contenedorM">
