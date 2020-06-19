@@ -2,7 +2,8 @@
 **  Nuxt
 */
 const http = require('http')
-require('update-electron-app')()
+// const {autoUpdater} = require("electron-u")
+const {autoUpdate} = require('electron-updater')
 const { Nuxt, Builder } = require('nuxt')
 let config = require('./nuxt.config.js')
 config.rootDir = __dirname // for electron-builder
@@ -25,6 +26,7 @@ console.log(`Nuxt working on ${_NUXT_URL_}`)
 /*
 ** Electron
 */
+
 let win = null // Current window
 const electron = require('electron')
 const path = require('path')
