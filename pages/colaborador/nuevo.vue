@@ -103,6 +103,32 @@
                                         </div>
                                     </div>
                                 </div>
+                                <br>
+                                <strong>Cuenta de Banco</strong>
+                                <div class="row">
+                                    <div class="col form-group">
+                                        <label>Seleccione un banco</label>
+                                        <select :class="{'is-invalid': $v.colaborador.banco.$error}"
+                                                v-model.trim="$v.colaborador.banco.$model" class="form-control-sm form-control">
+                                            <option v-for="item in Bancos" :value="item.id">{{item.nombre}}</option>
+                                        </select>
+                                        <div v-if="$v.colaborador.banco.$error">
+                                            <div class="error" v-if="!$v.colaborador.banco.required">{{errores.required}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col form-group">
+                                        <label>Número de cuenta</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               :class="{'is-invalid': $v.colaborador.numBanco.$error}"
+                                               v-model.trim="$v.colaborador.numBanco.$model">
+                                        <div v-if="$v.colaborador.numBanco.$error">
+                                            <div class="error" v-if="!$v.colaborador.numBanco.required">{{errores.required}}</div>
+                                            <div class="error" v-if="!$v.colaborador.numBanco.numeric">{{errores.numeric}}</div>
+                                            <div class="error" v-if="!$v.colaborador.numBanco.min">{{errores.min}}7.</div>
+                                            <div class="error" v-if="!$v.colaborador.numBanco.max">{{errores.max}}25.</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
@@ -179,8 +205,11 @@
                     apellidos: null,
                     correo:    null,
                     telefono:  null,
-                    identidad: null
+                    identidad: null,
+                    banco:     null,
+                    numBanco:  null
                 },
+                Bancos:        null,
                 isPeticion:        false,
                 isPeticionPuestos: false,
                 nombrePuesto:      null,
@@ -197,7 +226,9 @@
                 apellidos: {required, min:minLength(3), max:maxLength(50)},
                 telefono:  {required, min:minLength(8), max:maxLength(8), numeric},
                 identidad: {required, min:minLength(13), max:maxLength(13), numeric},
-                correo:    {required, email}
+                correo:    {required, email},
+                banco:     {required},
+                numBanco:  {required, min:minLength(7), max:maxLength(25), numeric}
             }
         },
         methods:{
@@ -226,6 +257,8 @@
                 data.append('sucursal', this.colaborador.sucursal);
                 data.append('puesto', this.colaborador.puesto);
                 data.append('telefono', this.colaborador.telefono);
+                data.append('banco', this.colaborador.banco);
+                data.append('numBanco', this.colaborador.numBanco);
                 data.append('foto', this.foto);
                 this.$axios({
                     method: 'post',
@@ -309,10 +342,22 @@
                         this.sucursales = res.data.suc
                     }
                 })
+            },
+            cargarBancos(){
+                this.$axios.get('bancos',{
+                    headers: {
+                        'Authorization': 'Bearer ' + this.$store.state.token
+                    }
+                }).then((res)=>{
+                    if (res.status === 200){
+                        this.Bancos = res.data.bancos
+                    }
+                })
             }
         },
         created() {
             this.cargarSucursales()
+            this.cargarBancos()
             this.cargarPuesto()
         },
     }

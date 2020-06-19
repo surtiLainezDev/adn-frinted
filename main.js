@@ -2,10 +2,7 @@
 **  Nuxt
 */
 const http = require('http')
-require('update-electron-app')({
-	repo: 'github-user/repo',
-	updateInterval: '1 hour',
-})
+require('update-electron-app')()
 const { Nuxt, Builder } = require('nuxt')
 let config = require('./nuxt.config.js')
 config.rootDir = __dirname // for electron-builder

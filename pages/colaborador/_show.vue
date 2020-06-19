@@ -5,6 +5,7 @@
                 <side-colaboradores/>
             </div>
             <div class="col-md-10">
+                <vs-progress color="success" v-if="isPeticion" indeterminate></vs-progress>
                 <div v-if="isPeticionPrincipal">
                     <div class="row">
                         <div class="col-auto"><h4>{{datosColaborador.nombres}} {{datosColaborador.apellidos}}</h4></div>
@@ -53,7 +54,22 @@
                                 </vs-list>
                             </vs-card>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-3">
+                            <vs-card>
+                                <vs-list>
+                                    <vs-list-header icon="attach_money" title="Cuentas de Bancos"></vs-list-header>
+                                    <div>
+                                        <vs-list-item>
+                                            <vs-button size="small" color="warning" @click="popupBanco = true">Crear Cuenta</vs-button>
+                                        </vs-list-item>
+                                        <vs-list-item  v-for="item in datosColaborador.cuentas_banco_colaboradors"
+                                                      icon="attach_money" :title="item.banco.nombre" :subtitle="item.cuenta"
+                                        ></vs-list-item>
+                                    </div>
+                                </vs-list>
+                            </vs-card>
+                        </div>
+                        <div class="col-md-5">
                             <vs-card>
                                 <vs-table :data="datosColaborador.contratos"  max-items="5" pagination>
                                     <template slot="header">
@@ -205,6 +221,29 @@
                                @close="cargarColaboradores">
                         <p>{{mensaje}}</p>
                     </vs-prompt>
+
+                    <vs-popup :title="'Añadiendo cuenta de banco a  '+datosColaborador.nombres+' '+datosColaborador.apellidos" :active.sync="popupBanco">
+                        <div style="padding: 5px">
+                            <div class="row">
+                                <div class="col form-group">
+                                    <label>Seleccione un banco</label>
+                                    <select v-model="cuentaB.banco" class="form-control form-control-sm">
+                                        <option v-for="item in Bancos" :value="item.id">{{item.nombre}}</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <label>Ingrese el número de cuenta</label>
+                                    <input type="text" class="form-control form-control-sm" v-model="cuentaB.cuenta">
+                                </div>
+                            </div>
+                            <vs-divider></vs-divider>
+                            <div class="row">
+                                <div class="col d-flex justify-content-end">
+                                    <vs-button color="success" @click="registrarCuentaBanco" :disabled="cuentaB.load">Registrar Cuenta</vs-button>
+                                </div>
+                            </div>
+                        </div>
+                    </vs-popup>
                 </div>
 
             </div>
@@ -226,6 +265,13 @@
         },
         data(){
             return{
+                cuentaB:{
+                    load: false,
+                    banco: null,
+                    cuenta: null
+                },
+                Bancos: null,
+                popupBanco: false,
                 isUsuario:        0,
                 mensaje:          null,
                 activePrompt:     false,
@@ -253,7 +299,7 @@
                     id:        null
                 },
                 popupActivo:      false,
-                isPeticion:       false,
+                isPeticion:       true,
                 datosColaborador: null,
                 infoCol: {
                     identidad: null,
@@ -284,10 +330,32 @@
         },
         created() {
             this.cargarColaboradores()
+            this.cargarBancos();
             this.cargarPuestosColaborador();
             this.cargarSucursales();
         },
         methods:{
+            registrarCuentaBanco(){
+                if (this.cuentaB.cuenta && this.cuentaB.banco){
+                    this.cuentaB.load = true
+                    this.$axios.post('cuenta_banco', {
+                        col: this.datosColaborador.id,
+                        cuenta: this.cuentaB.cuenta,
+                        banco: this.cuentaB.banco
+                    },{
+                        headers: {
+                            'Authorization': 'Bearer ' + this.$store.state.token
+                        }
+                    }).then((res)=>{
+                        if (res.status === 200){
+                            this.load = false
+                            this.popupBanco = false
+                            this.mensaje = 'Se ha creado la cuenta exitosamente'
+                            this.activePrompt = true
+                        }
+                    })
+                }
+            },
             redirecUser(val){
                 if (val === 0){
                     this.$router.replace({path:'/usuarios/nuevo'})
@@ -397,6 +465,17 @@
                         this.isPeticion = false
                         this.isPeticionPrincipal = true
                         this.infoColaborador()
+                    }
+                })
+            },
+            cargarBancos(){
+                this.$axios.get('bancos',{
+                    headers: {
+                        'Authorization': 'Bearer ' + this.$store.state.token
+                    }
+                }).then((res)=>{
+                    if (res.status === 200){
+                        this.Bancos = res.data.bancos
                     }
                 })
             }
