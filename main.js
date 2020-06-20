@@ -2,8 +2,8 @@
 **  Nuxt
 */
 const http = require('http')
-// const {autoUpdater} = require("electron-u")
-const {autoUpdate} = require('electron-updater')
+const {autoUpdater} = require('electron-updater')
+
 const { Nuxt, Builder } = require('nuxt')
 let config = require('./nuxt.config.js')
 config.rootDir = __dirname // for electron-builder
@@ -12,6 +12,11 @@ const nuxt = new Nuxt(config)
 const builder = new Builder(nuxt)
 const server = http.createServer(nuxt.render)
 // Build only in dev mode
+
+setInterval(() =>{
+	autoUpdater.checkForUpdates()
+}, 10*60*1000)
+
 if (config.dev) {
 	builder.build().catch(err => {
 		console.error(err) // eslint-disable-line no-console

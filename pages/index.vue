@@ -50,6 +50,8 @@
 								<vs-progress indeterminate color="success"></vs-progress>
 							</div>
 						</div>
+<!--						<input type="text" v-model="servidor" class="form-control-sm form-control">-->
+<!--						<button @click="ser">dddd</button>-->
 					</vs-card>
 				</div>
 			</div>
@@ -70,11 +72,16 @@
 					password: null,
 					codigo: null
 				},
+				servidor: null,
 				erroresServidor: [],
 				isPeticion: false
 			}
 		},
 		methods:{
+			ser(){
+				process.env.baseURL = this.servidor
+				console.log(process.env.baseURL)
+			},
 			logear(){
 				this.isPeticion = true
 				this.erroresServidor = []
